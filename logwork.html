@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logwork tổng hợp 2 Jira</title>
+<style>
+  :root{
+    --background:#0a0a0a; --card:#0d0d0f; --muted:#18181b; --muted2:#1c1c1f;
+    --border:#27272a; --border2:#3f3f46; --foreground:#fafafa; --secondary:#e4e4e7;
+    --muted-foreground:#a1a1aa; --muted2-foreground:#71717a;
+    --primary:#fafafa; --primary-foreground:#0a0a0a;
+    --green:#22c55e; --amber:#f59e0b; --red:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--background);color:var(--foreground);
+    font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:13px;padding:0;line-height:1.4;-webkit-font-smoothing:antialiased}
+  .page{max-width:none;margin:0;padding:0}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0;padding:18px 16px 14px}
+  header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:-.01em}
+  header .sub{color:var(--muted-foreground);font-size:12px}
+  .controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:0 0 14px;
+    background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{color:var(--muted-foreground);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  .controls input{background:var(--muted);color:var(--foreground);border:1px solid var(--border);
+    border-radius:10px;padding:8px 11px;font-size:13px;outline:none;height:38px}
+  .controls input:focus{border-color:var(--border2)}
+  .controls .go{background:var(--primary);color:var(--primary-foreground);border:none;
+    border-radius:10px;padding:0 20px;height:38px;font-weight:600;cursor:pointer;font-size:13px}
+  .controls .go:hover{background:#fff}
+  #status{color:var(--muted-foreground);font-size:12px;margin-left:4px;align-self:center}
+  .meta{color:var(--muted-foreground);margin:0 0 12px;padding:0 16px;font-size:12px}
+  .card{border:none;background:var(--card)}
+  .scroll{overflow-x:auto;overflow-y:auto}
+  table{border-collapse:collapse;white-space:nowrap;width:100%;table-layout:fixed}
+  th,td{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0;
+    text-align:center;min-width:48px}
+  .lbl{position:sticky;left:0;background:var(--card);text-align:left;padding:9px 12px;
+    width:240px;overflow:hidden;text-overflow:ellipsis;color:var(--foreground);z-index:2}
+  .wkh{background:var(--card);color:var(--muted-foreground);font-weight:600;padding:6px;font-size:12px;letter-spacing:.02em}
+  .dhd{background:var(--card);padding:5px;line-height:1.2}
+  .wkh,.dhd{position:sticky;z-index:3}
+  .wkh{top:0;height:26px}
+  .dhd{top:26px}
+  thead .lbl{z-index:4}
+  thead tr:first-child .lbl{top:0}
+  thead tr:last-child .lbl{top:26px}
+  .dhd .n{font-weight:600;color:var(--secondary)}
+  .dhd .a{color:var(--muted-foreground);font-size:11px;text-transform:uppercase}
+  .dhd.wknd .n,.dhd.wknd .a{color:var(--red)}
+  .team-row td{background:#17171a}
+  .team-row .lbl{background:#17171a;font-weight:700;font-size:12px;color:var(--secondary);text-transform:uppercase;letter-spacing:.07em}
+  .member-row .lbl{font-weight:600}
+  .member-row:hover .lbl,.member-row:hover td{background:#121215}
+  .ticket-row .lbl{color:var(--muted-foreground);padding-left:48px;background:var(--card)}
+  .ticket-row .lbl a{color:var(--foreground);text-decoration:none;font-size:12px;font-weight:500}
+  .ticket-row .lbl a:hover{text-decoration:underline}
+  .ticket-row .lbl .sum{margin-left:8px;font-size:12px;color:var(--muted-foreground)}
+  .ticket-row:hover .lbl,.ticket-row:hover td{background:#121215}
+  .tt{background:var(--muted);border:1px solid var(--border);color:var(--muted-foreground);
+    border-radius:50%;width:24px;height:24px;line-height:1;cursor:pointer;font-size:11px;
+    margin-right:10px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+  .tt:hover{background:var(--muted2);color:var(--foreground)}
+  .cell{position:relative;height:38px;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:2px 3px;color:var(--secondary)}
+  .cell .v{font-weight:600;font-size:12px}
+  .bar{position:absolute;left:0;bottom:0;height:4px}
+  .hatch{background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,
+    rgba(255,255,255,.06) 3px,rgba(255,255,255,.06) 4px),
+    repeating-linear-gradient(-45deg,transparent,transparent 3px,
+    rgba(255,255,255,.09) 3px,rgba(255,255,255,.09) 4px)}
+  .note{color:var(--muted-foreground);font-size:11px;margin-top:0;padding:12px 16px 18px}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <h1>Logwork tổng hợp 2 Jira</h1>
+  <span class="sub">enotion + vortech</span>
+</header>
+<div class="controls">
+  <div class="field"><label>Từ</label><input type="date" id="from"></div>
+  <div class="field"><label>Đến</label><input type="date" id="to"></div>
+  <button class="go" id="go">Cập nhật</button>
+  <span id="status"></span>
+</div>
+<div class="meta" id="meta"></div>
+<div class="card"><div class="scroll" id="grid"></div></div>
+<div class="note">* Bấm mũi tên ▾/▸ để xổ team hoặc xem ticket của từng thành viên. Thanh dưới mỗi ô = % so với 8h (xanh =8h, cam &lt;8h, đỏ &gt;8h).</div>
+</div>
+
+<script>
+const EMBEDDED = /*__DATA__*/null;
+const $ = s=>document.querySelector(s);
+
+const DAYAB = ['SU','MO','TU','WE','TH','FR','SA'];
+const MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+let EXPAND = { _init:false, teams:new Set(), members:new Set() };
+let LAST = null;
+let STATIC_MODE = false;
+
+function fmt(v){
+  if(v===undefined||v===null||v===0) return '';
+  return v.toFixed(4).replace(/\.?0+$/,'');
+}
+function isoWeek(d){
+  const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const dayNum=date.getUTCDay()||7; date.setUTCDate(date.getUTCDate()+4-dayNum);
+  const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+function parseDay(s){ const p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function dow(s){ return parseDay(s).getDay(); }
+function isWeekend(s){ const d=dow(s); return d===0||d===6; }
+function barColor(v){ if(v>8) return 'var(--red)'; if(v===8) return 'var(--green)'; return 'var(--amber)'; }
+
+function weekSpans(days){
+  const spans=[]; let cur=null;
+  days.forEach(s=>{
+    if(!cur || dow(s)===1){ cur={start:s,end:s,days:[]}; spans.push(cur); }
+    cur.end=s; cur.days.push(s);
+  });
+  return spans.map(sp=>{
+    const ds=parseDay(sp.start);
+    return {label:`${MON[ds.getMonth()]} ${ds.getFullYear()}, ${+sp.start.slice(8)} to ${+sp.end.slice(8)} (W-${isoWeek(ds)})`, days:sp.days};
+  });
+}
+
+function cellMember(h, wk){
+  if(wk && h===0) return `<td><div class="cell hatch"></div></td>`;
+  if(!h) return `<td><div class="cell"></div></td>`;
+  const w=Math.min(h,8)/8*100;
+  return `<td><div class="cell"><div class="v">${fmt(h)}</div><div class="bar" style="width:${w}%;background:${barColor(h)}"></div></div></td>`;
+}
+function cellTicket(h, wk){
+  if(wk && h===0) return `<td><div class="cell hatch"></div></td>`;
+  if(!h) return `<td><div class="cell"></div></td>`;
+  return `<td><div class="cell"><div class="v">${fmt(h)}</div></div></td>`;
+}
+function chev(on){ return on ? '\u25BE' : '\u25B8'; }
+
+function render(data){
+  LAST=data;
+  const grid=$('#grid'); const days=data.days;
+  if(!days.length){ grid.textContent='Không có dữ liệu'; return; }
+  $('#meta').textContent=`Kỳ: ${data.from} → ${data.to} (${days.length} ngày)`;
+  $('#from').value=data.from; $('#to').value=data.to;
+  if(!EXPAND._init){ data.groups.forEach(g=>EXPAND.teams.add(g.name)); EXPAND._init=true; }
+
+  const spans=weekSpans(days);
+  let h='<table><thead>';
+  h+='<tr><th class="lbl"></th>';
+  spans.forEach(sp=>{ h+=`<th colspan="${sp.days.length}" class="wkh">${sp.label}</th>`; });
+  h+='</tr>';
+  h+='<tr><th class="lbl" style="font-weight:700;color:var(--secondary)">Thành viên / Ticket</th>';
+  days.forEach(s=>{
+    const w=isWeekend(s), n=+s.slice(8), ab=DAYAB[dow(s)];
+    h+=`<th class="dhd ${w?'wknd':''}"><div class="n">${n}</div><div class="a">${ab}</div></th>`;
+  });
+  h+='</tr></thead><tbody>';
+
+  data.groups.forEach(g=>{
+    const gname=g.name.toUpperCase();
+    const gOpen=EXPAND.teams.has(g.name);
+    h+=`<tr class="team-row"><td class="lbl"><button class="tt" data-t="team" data-x="${g.name}">${chev(gOpen)}</button>${gname}</td>`;
+    days.forEach(()=>{ h+='<td></td>'; });
+    h+='</tr>';
+    if(!gOpen) return;
+    g.members.forEach(m=>{
+      const mid=m.label;
+      const mOpen=EXPAND.members.has(mid);
+      const xid=mid.replace(/"/g,'&quot;');
+      h+=`<tr class="member-row"><td class="lbl"><button class="tt" data-t="member" data-x="${xid}">${chev(mOpen)}</button>${mid}</td>`;
+      days.forEach(s=>{ h+=cellMember(m.hours[s], isWeekend(s)); });
+      h+='</tr>';
+      if(!mOpen) return;
+      (m.tickets||[]).forEach(t=>{
+        h+=`<tr class="ticket-row"><td class="lbl"><a href="javascript:void(0)">${t.key}</a><span class="sum">– ${t.summary||''}</span></td>`;
+        days.forEach(s=>{ h+=cellTicket(t.hours[s], isWeekend(s)); });
+        h+='</tr>';
+      });
+    });
+  });
+  h+='</tbody></table>';
+  grid.innerHTML=h;
+}
+
+function onToggle(e){
+  const btn=e.target.closest('.tt');
+  if(!btn||!LAST) return;
+  const t=btn.dataset.t, x=btn.dataset.x;
+  if(t==='team'){ EXPAND.teams.has(x)?EXPAND.teams.delete(x):EXPAND.teams.add(x); }
+  else if(t==='member'){ EXPAND.members.has(x)?EXPAND.members.delete(x):EXPAND.members.add(x); }
+  render(LAST);
+}
+document.addEventListener('click', onToggle);
+
+async function load(){
+  if(STATIC_MODE){
+    $('#status').textContent='chế độ tĩnh (CI) — dữ liệu mới nhất từ data.json';
+    return;
+  }
+  const from=$('#from').value, to=$('#to').value;
+  $('#status').textContent='Đang tải…';
+  try{
+    const res=await fetch(`/api/logwork?from=${from}&to=${to}`);
+    render(await res.json());
+    $('#status').textContent='xong ✓';
+  }catch(e){
+    $('#status').textContent='Không lấy được dữ liệu: '+(e.message||e);
+  }
+}
+
+async function loadStatic(){
+  try{
+    const res=await fetch('data.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('data.json chưa có ('+res.status+')');
+    STATIC_MODE=true;
+    const data=await res.json();
+    render(data);
+    $('#go').disabled=true;
+    $('#from').disabled=true; $('#to').disabled=true;
+    $('#status').textContent='chế độ tĩnh — dữ liệu cập nhật tự động (GitHub Actions)';
+  }catch(e){
+    $('#status').textContent='Chưa có data.json: '+(e.message||e);
+  }
+}
+
+function boot(data){
+  if(data){ render(data); $('#status').textContent='(dữ liệu tĩnh)'; return; }
+  if(location.protocol==='file:'){
+    $('#status').textContent='Đây là bản code (không nhúng dữ liệu). Mở logwork-report.html, hoặc chạy ./start.sh rồi mở http://127.0.0.1:8765/';
+    return;
+  }
+  if(location.hostname==='localhost' || location.hostname==='127.0.0.1'){
+    fetch('/api/default').then(r=>r.json()).then(d=>{ $('#from').value=d.from; $('#to').value=d.to; load(); })
+      .catch(()=>{ $('#status').textContent='Server chưa chạy — chạy ./start.sh rồi mở http://127.0.0.1:8765/'; });
+  }else{
+    loadStatic();
+  }
+}
+$('#go').addEventListener('click', load);
+boot(EMBEDDED);
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# local-only (macOS LaunchAgent runner)
+run_server.sh
+start.sh
+server.log
+nohup.out
+
+# python
+__pycache__/
+*.pyc
