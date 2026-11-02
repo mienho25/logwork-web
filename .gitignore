@@ -6,4 +6,5 @@ nohup.out
 
 # python
 __pycache__/
-*.pyc
+*.pycrefresh.log
+refresh.err
