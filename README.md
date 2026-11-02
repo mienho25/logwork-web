@@ -32,26 +32,24 @@ Bỏ `--from/--to` → dùng 2 tuần đầy đủ gần nhất.
 ~/chatbot-discord/.venv/bin/python logwork.py --refresh-members
 ```
 
-## Host public (GitHub + Vercel)
-Trang Vercel là **bản static**: frontend tự đọc `data.json` (đã commit sẵn).
-`data.json` được làm mới **tự động** bởi GitHub Actions
-(`.github/workflows/refresh-data.yml`, chạy mỗi 30 phút + chạy tay từ tab Actions)
-→ commit về repo → Vercel tự deploy lại.
+## Host public — Cloudflare Pages (thay Vercel)
+Trang là **bản static đọc `data.json`** trong repo. `data.json` được máy bạn tự làm mới
+(LaunchAgent `com.pma-lily.logwork-refresh`, 15 phút/lần: `logwork.py --json` → `git push`)
+→ **Cloudflare Pages tự deploy lại** mỗi lần push.
 
-Cần 1 lần setup trong **GitHub repo → Settings → Secrets and variables → Actions**:
-- `JIRA_ENOTION_URL` / `JIRA_ENOTION_EMAIL` / `JIRA_ENOTION_TOKEN`
-- `JIRA_VORTECH_URL` / `JIRA_VORTECH_EMAIL` / `JIRA_VORTECH_TOKEN`
+### Setup 1 lần trên Cloudflare (miễn phí):
+1. Vào https://dash.cloudflare.com → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+2. Chọn repo `logwork-web` → **Begin setup**.
+3. Cấu hình build:
+   - **Framework preset**: *None*
+   - **Build command**: *(bỏ trống)*
+   - **Build output directory**: `/`
+4. **Save and Deploy**. Xong — mỗi lần push `data.json` là Cloudflare tự cập nhật (domain kiểu `logwork-web.pages.dev`).
 
-Vercel: **Import repo** (không cần environment variable nào — code chỉ chạy CI).
-Lưu ý: repo phải **public** (Actions cron + Vercel free cần repo public).
+File `_redirects` trong repo đã map `/` → `logwork.html`, nên mở gốc domain là thấy grid.
+Không cần bot, không cần cron Actions, không cần repo public (vì dùng job local).
 
-Local vẫn chạy song song: khi mở qua `http://127.0.0.1:8765/` thì trang dùng API
-live (chọn ngày được); khi mở qua host Vercel thì dùng `data.json` (chế độ tĩnh).
-
-Lệnh sinh `data.json` thủ công (cùng code CI chạy):
-```bash
-~/chatbot-discord/.venv/bin/python logwork.py --json
-```
+Local vẫn chạy song song: http://127.0.0.1:8765/ (API live).
 
 ## Cấu trúc
 - `logwork.py` — fetch 2 Jira + server + xuất snapshot (stdlib, urllib).
