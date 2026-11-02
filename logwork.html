@@ -146,7 +146,8 @@ function render(data){
   LAST=data;
   const grid=$('#grid'); const days=data.days;
   if(!days.length){ grid.textContent='Không có dữ liệu'; return; }
-  $('#meta').textContent=`Kỳ: ${data.from} → ${data.to} (${days.length} ngày)`;
+  const gen=data.generated_at ? ` · cập nhật ${data.generated_at}` : '';
+  $('#meta').textContent=`Kỳ: ${data.from} → ${data.to} (${days.length} ngày)${gen}`;
   $('#from').value=data.from; $('#to').value=data.to;
   if(!EXPAND._init){ data.groups.forEach(g=>EXPAND.teams.add(g.name)); EXPAND._init=true; }
 
@@ -244,6 +245,10 @@ function boot(data){
 }
 $('#go').addEventListener('click', load);
 boot(EMBEDDED);
+setInterval(()=>{
+  if(STATIC_MODE) loadStatic();
+  else if(location.hostname==='localhost'||location.hostname==='127.0.0.1') load();
+}, 600000);
 </script>
 </body>
 </html>

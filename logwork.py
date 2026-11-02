@@ -237,13 +237,17 @@ def _person_key(display: str, accountId: str, roster_by_jid: dict) -> str:
     return "name:" + re.sub(r"\s+", " ", (display or "").strip().lower())
 
 
-_cache: dict[str, dict] = {}
+_cache: dict[str, tuple[float, dict]] = {}
+_CACHE_TTL = 600  # seconds: re-fetch from Jira after 10 min
 
 
-def build_grid(date_from: str, date_to: str) -> dict:
+def build_grid(date_from: str, date_to: str, use_cache: bool = True) -> dict:
     key = (date_from, date_to)
-    if key in _cache:
-        return _cache[key]
+    now = time.time()
+    if use_cache and key in _cache:
+        ts, data = _cache[key]
+        if now - ts < _CACHE_TTL:
+            return data
 
     roster = load_roster()
     # roster index by jira_id -> id (for cross-site keying)
@@ -328,8 +332,9 @@ def build_grid(date_from: str, date_to: str) -> dict:
             } for m in ms],
         })
 
-    data = {"from": date_from, "to": date_to, "days": days, "groups": out_groups}
-    _cache[key] = data
+    data = {"from": date_from, "to": date_to, "days": days, "groups": out_groups,
+            "generated_at": time.strftime("%Y-%m-%d %H:%M:%S")}
+    _cache[key] = (time.time(), data)
     return data
 
 
